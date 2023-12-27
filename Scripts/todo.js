@@ -120,7 +120,6 @@ function show(){
         //     parent.appendChild(child);
         // }
     };
-    const sortedDivs = divs.sort((div1,div2) => ( new Date(div1.lastChild.innerHTML) > new Date(div2.lastChild.innerHTML) ? 1 : new Date(div1.lastChild.innerHTML) < new Date(div2.lastChild.innerHTML) ? -1 : 0 ));
     const sorted = divs.sort((div1,div2) => {
         let date1 = new Date(div1.childNodes[1].innerHTML);
         let date2 = new Date(div2.childNodes[1].innerHTML);
@@ -165,9 +164,58 @@ class todo{
         this.date = date
     }
 }
+function search(){
+    const parent =document.getElementById('div2');
+    const divs = [];
+    let searchedText = document.getElementById('searchField').value;
+    if (searchedText==""){
+        return;
+    }
+    parent.innerHTML="";
+    
+    
+    let searchedRegex = new RegExp(searchedText,"i");
+    list1.forEach(myFunction);
+    function myFunction(value){
+        if(value.text.search(searchedRegex)>-1){
+            const father = document.createElement('div');
+            const child = document.createElement('p');
+            const child2 = document.createElement('p');
+            const childButton = document.createElement('button');
+            const childButton2 = document.createElement('button');
+            childButton2.innerHTML="edit todo";
+            child.innerHTML = value.text;
+            child2.innerHTML = value.date.toISOString().slice(0,10);
+            childButton.innerHTML="delete todo";
+            father.appendChild(child);
+            father.appendChild(child2);
+            father.appendChild(childButton);
+            father.appendChild(childButton2);
+            childButton.onclick = function(){
+                deleteTodo(list1,value);
+            }
+            childButton2.onclick = function(){
+                editTodo(list1,value,childButton2.parentElement,childButton2);
+            }
+            divs.push(father);
+        }   
+    };
+    const sorted = divs.sort((div1,div2) => {
+        let date1 = new Date(div1.childNodes[1].innerHTML);
+        let date2 = new Date(div2.childNodes[1].innerHTML);
+        console.log(date2);
+        console.log(date1.getTime - date2.getTime);
+        return -(date1.getTime() - date2.getTime());
+    } );
+    sorted.forEach(myFunction2);
+    function myFunction2(value){
+        parent.appendChild(value);
+    }
+
+}
 load();
 document.getElementById('date-picker').valueAsDate = new Date();
-
+document.getElementById('searchField').onchange = search;
 document.getElementById('add-button').onclick= f;
 document.getElementById('show-button').onclick= show;
 document.getElementById('clear-button').onclick = clearTodos;
